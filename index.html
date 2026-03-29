@@ -41,7 +41,7 @@
             margin: 0 auto;
             padding: 40px 20px;
             display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
+            grid-template-columns: 1fr 1fr; /* Two equal-sized columns */
             gap: 30px;
         }
 
@@ -54,6 +54,17 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.4);
             color: #ffffff;
             backdrop-filter: blur(10px);
+        }
+
+        .science-box {
+            grid-column: span 2; /* Spans both columns */
+            background: rgba(30, 40, 60, 0.80);
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            color: #ffffff;
+            backdrop-filter: blur(10px);
+            margin-top: 30px;
         }
 
         h2 { color: #ffffff; margin-bottom: 20px; font-size: 1.6em; border-left: 5px solid var(--accent); padding-left: 15px; }
@@ -135,13 +146,12 @@
 <body>
 
 <header>
-    <h1>🌟 Star Tracker Pro</h1>
-    <p>Precision DIY Astrophotography Mount Calibration</p>
+    <h1>Barn Door Tracker</h1>
 </header>
 
 <div class="container">
     <div class="card">
-        <h2>The Math & Science</h2>
+        <h2>The Math</h2>
         <p>A <strong>Barn Door/Haig Mount</strong> counteracts Earth's rotation by opening two boards at a precise "Sidereal" rate. To track the stars, the mount must complete one full rotation every <strong>23h 56m 4.09s</strong>.</p>
 
         <h3>The Sidereal Constant</h3>
@@ -156,23 +166,6 @@
             <li><strong>P:</strong> Thread Pitch (distance moved per turn).</li>
             <li><strong>L:</strong> Radius from the hinge center to the bolt center.</li>
         </ul>
-
-        <h3>Common Bolt References</h3>
-        <table>
-            <thead>
-                <tr><th>Bolt Type</th><th>Pitch (P)</th><th>Common Diameter</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>M6 Standard</td><td>1.00 mm</td><td>6 mm</td></tr>
-                <tr><td>M8 Standard</td><td>1.25 mm</td><td>8 mm</td></tr>
-                <tr><td>1/4-20 UNC</td><td>1.27 mm</td><td>6.35 mm</td></tr>
-                <tr><td>M6 Fine</td><td>0.75 mm</td><td>6 mm</td></tr>
-            </tbody>
-        </table>
-
-        <h3>Tangent Error & Rod Bending</h3>
-        <p>If you use a straight bolt, the geometry changes as the mount opens, causing tracking to slow down. <strong>Bending the rod into an arc</strong> with radius $L$ eliminates this error entirely.</p>
-        <p><em>Tip: Bend the rod around a jig slightly smaller than L to account for the rod's own thickness.</em></p>
     </div>
 
     <div class="card">
@@ -221,6 +214,12 @@
             </div>
             <p class="hint" style="text-align:center; margin-top:10px;">Calculated for a precise Sidereal Day.</p>
         </div>
+    </div>
+
+    <div class="science-box">
+        <h2>The Science</h2>
+        <p>If you use a straight bolt, the geometry changes as the mount opens, causing tracking to slow down. <strong>Bending the rod into an arc</strong> with radius $L$ eliminates this error entirely.</p>
+        <p><em>Tip: Bend the rod around a jig slightly smaller than L to account for the rod's own thickness.</em></p>
     </div>
 </div>
 
