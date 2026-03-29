@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Tracker Pro | Calibration & Math</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #1a252f;
+            --accent: #3498db;
+            --accent-glow: rgba(52, 152, 219, 0.3);
+            --bg: #0a0e27;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --text: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            background-image: url('images/image.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+
+        header {
+            background: linear-gradient(135deg, rgba(44, 62, 80, 0.85) 0%, rgba(0, 0, 0, 0.85) 100%);
+            color: white;
+            padding: 50px 20px;
+            text-align: center;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 1000px) { .container { grid-template-columns: 1fr; } }
+
+        .card {
+            background: rgba(30, 40, 60, 0.80);
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            color: #ffffff;
+            backdrop-filter: blur(10px);
+        }
+
+        h2 { color: #ffffff; margin-bottom: 20px; font-size: 1.6em; border-left: 5px solid var(--accent); padding-left: 15px; }
+        h3 { color: #64b5f6; margin-top: 25px; margin-bottom: 10px; font-size: 1.2em; }
+        
+        p { margin-bottom: 15px; font-size: 0.95em; color: #e0e0e0; }
+
+        header h1 { color: #ffffff; }
+        header p { color: #b3e5fc; }
+
+        .formula-box {
+            font-family: 'Consolas', 'Monaco', monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px dashed var(--accent);
+            margin: 15px 0;
+            color: #64b5f6;
+            font-weight: bold;
+        }
+
+        /* Table Styling */
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9em; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); color: #e0e0e0; }
+        th { background: rgba(0, 0, 0, 0.2); color: #64b5f6; }
+
+        /* Input Styling */
+        .input-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 0.9em; color: #b3e5fc; }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: 0.3s;
+            background: rgba(255,255,255,0.1);
+            color: #ffffff;
+        }
+        input::placeholder { color: rgba(255,255,255,0.5); }
+        input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 10px var(--accent-glow); background: rgba(255,255,255,0.15); }
+
+        .results-panel {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+            border-left: 8px solid var(--accent);
+        }
+
+        .res-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .res-label { font-weight: 600; color: #b3e5fc; }
+        .res-value { font-family: 'Courier New', monospace; font-weight: 700; color: #64b5f6; font-size: 1.1em; }
+
+        .hint { font-size: 0.8em; color: #90caf9; margin-top: 5px; font-style: italic; }
+
+        ul { margin-left: 20px; }
+        ul li { color: #e0e0e0; margin-bottom: 8px; }
+        strong { color: #ffffff; }
+
+        @media (max-width: 480px) {
+            body { background-attachment: scroll; }
+            header { padding: 30px 15px; }
+            header h1 { font-size: 1.5em; }
+            header p { font-size: 0.9em; }
+            .container { padding: 20px 15px; gap: 20px; }
+            .card { padding: 20px; border-radius: 10px; }
+            h2 { font-size: 1.3em; }
+            h3 { font-size: 1em; }
+            p { font-size: 0.9em; }
+            input { padding: 14px; font-size: 16px; }
+            label { font-size: 0.85em; }
+            table { font-size: 0.8em; }
+            th, td { padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🌟 Star Tracker Pro</h1>
+    <p>Precision DIY Astrophotography Mount Calibration</p>
+</header>
+
+<div class="container">
+    <div class="card">
+        <h2>The Math & Science</h2>
+        <p>A <strong>Barn Door/Haig Mount</strong> counteracts Earth's rotation by opening two boards at a precise "Sidereal" rate. To track the stars, the mount must complete one full rotation every <strong>23h 56m 4.09s</strong>.</p>
+
+        <h3>The Sidereal Constant</h3>
+        <p>The core of our calculation relies on the Sidereal Constant. This represents how many seconds it takes for Earth to rotate by one radian:</p>
+        <div class="formula-box">Constant = 86,164.09 sec / 2π ≈ 13713.44</div>
+
+        <h3>The Master Formula</h3>
+        <p>To avoid "star trailing," your drive bolt must rotate at this speed:</p>
+        <div class="formula-box">T_rev = (13713.44 × P) / L</div>
+        <ul>
+            <li><strong>T_rev:</strong> Seconds per full 360° turn of the bolt.</li>
+            <li><strong>P:</strong> Thread Pitch (distance moved per turn).</li>
+            <li><strong>L:</strong> Radius from the hinge center to the bolt center.</li>
+        </ul>
+
+        <h3>Common Bolt References</h3>
+        <table>
+            <thead>
+                <tr><th>Bolt Type</th><th>Pitch (P)</th><th>Common Diameter</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>M6 Standard</td><td>1.00 mm</td><td>6 mm</td></tr>
+                <tr><td>M8 Standard</td><td>1.25 mm</td><td>8 mm</td></tr>
+                <tr><td>1/4-20 UNC</td><td>1.27 mm</td><td>6.35 mm</td></tr>
+                <tr><td>M6 Fine</td><td>0.75 mm</td><td>6 mm</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Tangent Error & Rod Bending</h3>
+        <p>If you use a straight bolt, the geometry changes as the mount opens, causing tracking to slow down. <strong>Bending the rod into an arc</strong> with radius $L$ eliminates this error entirely.</p>
+        <p><em>Tip: Bend the rod around a jig slightly smaller than L to account for the rod's own thickness.</em></p>
+    </div>
+
+    <div class="card">
+        <h2>Calibration Tool</h2>
+        <p>Enter your build measurements to calculate timing.</p>
+
+        <div class="input-group">
+            <label>Hinge-to-Bolt Distance (L) mm</label>
+            <input type="number" id="L" placeholder="e.g. 228.5" step="0.1" oninput="runCalc()">
+            <div class="hint">Distance from hinge pin center to bolt center.</div>
+        </div>
+
+        <div class="input-group">
+            <label>Bolt Thread Pitch (P) mm</label>
+            <input type="number" id="P" placeholder="e.g. 1.0" step="0.01" oninput="runCalc()">
+            <div class="hint">Standard M6 is 1.0, M8 is 1.25.</div>
+        </div>
+
+        <div class="input-group">
+            <label>Big Gear Teeth (on bolt)</label>
+            <input type="number" id="tBig" placeholder="e.g. 50" oninput="runCalc()">
+            <div class="hint">Leave blank or 1 if direct drive.</div>
+        </div>
+
+        <div class="input-group">
+            <label>Small Gear Teeth (on motor)</label>
+            <input type="number" id="tSmall" placeholder="e.g. 10" oninput="runCalc()">
+        </div>
+
+        <div class="results-panel" id="results">
+            <div class="res-row">
+                <span class="res-label">Bolt Rotation:</span>
+                <span class="res-value"><span id="outBolt">0</span>s</span>
+            </div>
+            <div class="res-row">
+                <span class="res-label">Motor Rotation:</span>
+                <span class="res-value"><span id="outMotor">0</span>s</span>
+            </div>
+            <div class="res-row">
+                <span class="res-label">Target RPM:</span>
+                <span class="res-value" id="outRPM">0</span>
+            </div>
+            <div class="res-row" style="margin-top:10px; border-top: 2px solid #ddd; padding-top:15px;">
+                <span class="res-label">Rod Bend Radius:</span>
+                <span class="res-value"><span id="outBend">0</span>mm</span>
+            </div>
+            <p class="hint" style="text-align:center; margin-top:10px;">Calculated for a precise Sidereal Day.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function runCalc() {
+        const L = parseFloat(document.getElementById('L').value);
+        const P = parseFloat(document.getElementById('P').value);
+        const tBig = parseFloat(document.getElementById('tBig').value) || 1;
+        const tSmall = parseFloat(document.getElementById('tSmall').value) || 1;
+        const panel = document.getElementById('results');
+
+        // Precise Sidereal Constant (86164.09 / 2PI)
+        const SIDEREAL_CONST = 13713.4412;
+
+        if (L > 0 && P > 0) {
+            panel.style.display = 'block';
+
+            // 1. Bolt Rotation Time
+            const tBolt = (SIDEREAL_CONST * P) / L;
+
+            // 2. Motor Timing
+            const ratio = tBig / tSmall;
+            const tMotor = tBolt / ratio;
+            const rpm = 60 / tMotor;
+
+            // 3. Physical Bend (Assuming common rod thicknesses)
+            const rodThickness = (P >= 1.25) ? 8 : 6;
+            const bendR = L - (rodThickness / 2);
+
+            // Update UI
+            document.getElementById('outBolt').innerText = tBolt.toFixed(2);
+            document.getElementById('outMotor').innerText = tMotor.toFixed(2);
+            document.getElementById('outRPM').innerText = rpm.toFixed(4);
+            document.getElementById('outBend').innerText = bendR.toFixed(1);
+        } else {
+            panel.style.display = 'none';
+        }
+    }
+</script>
+
+</body>
+</html>
