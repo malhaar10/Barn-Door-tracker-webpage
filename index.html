@@ -37,15 +37,40 @@
         }
 
         .container {
-            max-width: 1300px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* Two equal-sized columns */
-            gap: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Consistent spacing between sections */
+            max-width: 800px; /* Reduce overall width for a concise layout */
+            margin: 0 auto; /* Center the content */
+            padding: 20px; /* Reduce padding for a cleaner look */
         }
 
         @media (max-width: 1000px) { .container { grid-template-columns: 1fr; } }
+
+        @media (max-width: 768px) {
+            .container {
+                gap: 15px; /* Reduce spacing further for mobile */
+                padding: 15px; /* Smaller padding on mobile */
+            }
+
+            .card, .science-box {
+                padding: 15px; /* Smaller padding inside boxes on mobile */
+            }
+
+            h2 {
+                font-size: 1.2em; /* Smaller headings on mobile */
+            }
+
+            p, ul li {
+                font-size: 0.85em; /* Smaller text on mobile */
+            }
+        }
+
+        .card, .science-box {
+            padding: 20px; /* Reduce padding inside boxes */
+            border-radius: 10px; /* Slightly smaller border radius */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3); /* Subtle shadow */
+        }
 
         .card {
             background: rgba(30, 40, 60, 0.80);
@@ -64,13 +89,13 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.4);
             color: #ffffff;
             backdrop-filter: blur(10px);
-            margin-top: 30px;
+            margin-top: 20px; /* Reduced margin above the wide box */
         }
 
-        h2 { color: #ffffff; margin-bottom: 20px; font-size: 1.6em; border-left: 5px solid var(--accent); padding-left: 15px; }
+        h2 { color: #ffffff; margin-bottom: 20px; font-size: 1.4em; border-left: 5px solid var(--accent); padding-left: 15px; }
         h3 { color: #64b5f6; margin-top: 25px; margin-bottom: 10px; font-size: 1.2em; }
         
-        p { margin-bottom: 15px; font-size: 0.95em; color: #e0e0e0; }
+        p, ul li { margin-bottom: 10px; font-size: 0.9em; color: #e0e0e0; }
 
         header h1 { color: #ffffff; }
         header p { color: #b3e5fc; }
@@ -112,13 +137,16 @@
             padding: 25px;
             border-radius: 12px;
             margin-top: 20px;
-            display: none;
             border-left: 8px solid var(--accent);
+            display: block; /* Ensure the results panel is always visible */
         }
 
         .res-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .res-label { font-weight: 600; color: #b3e5fc; }
         .res-value { font-family: 'Courier New', monospace; font-weight: 700; color: #64b5f6; font-size: 1.1em; }
+        .res-value span {
+            visibility: visible; /* Ensure output values are always visible */
+        }
 
         .hint { font-size: 0.8em; color: #90caf9; margin-top: 5px; font-style: italic; }
 
