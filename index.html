@@ -271,6 +271,23 @@
                 <li><strong>P:</strong> Thread Pitch (distance moved per turn).</li>
                 <li><strong>R:</strong> Radius from the hinge center to the bolt center.</li>
             </ul>
+
+            <h3>The Drive Radius</h3>
+            <p>To synchronize the tracker with the stars, the physical dimensions must match the Earth's sidereal rotation rate. We equate the linear speed of the nut to the tangential speed at the radius.</p>
+            <div class="formula-box">R = (P × RPM) / ω</div>
+            <ul>
+                <li><strong>R:</strong> Distance from hinge to bolt (mm or inches).</li>
+                <li><strong>P:</strong> Pitch of the thread (distance moved per full revolution).</li>
+                <li><strong>RPM:</strong> Motor revolutions per minute.</li>
+            </ul>
+
+            <h3>Bolt Curvature</h3>
+            <p>The bolt must be bent to a radius exactly equal to <strong>R</strong>. If the bend radius differs from the mounting radius, the mechanism can bind or introduce tracking inaccuracies.</p>
+
+            <h3>Tracking Error (Simplified)</h3>
+            <p>After removing tangent error, the dominant remaining error is polar misalignment:</p>
+            <div class="formula-box">E ≈ Δθ × sin(δ)</div>
+            <p class="hint">Where Δθ is the alignment error and δ is the declination of the target object.</p>
         </div>
     </section>
 
@@ -278,6 +295,29 @@
         <div class="panel">
             <h2>Calculator</h2>
             <p>Enter your build measurements to calculate the target timing.</p>
+
+            <h3>How It Works</h3>
+            <p>The calculator uses the sidereal formula to output the target time for one full rotation of the large gear (the bolt). If <strong>P</strong> is the thread pitch and <strong>T</strong> is the time for one revolution in minutes, the drive radius is:</p>
+            <div class="formula-box">R = (P × 1436.07) / (2π × T)</div>
+            <ul>
+                <li><strong>Hinge-to-Bolt Distance (L):</strong> Measure from hinge center to the outer edge of the bolt.</li>
+                <li><strong>Bolt Pitch (P):</strong> Thread pitch in mm per revolution.</li>
+                <li><strong>Bolt Thickness:</strong> Diameter used to convert L to the centerline distance.</li>
+                <li><strong>Small Gear Teeth:</strong> Teeth count on the motor gear.</li>
+                <li><strong>Large Gear Teeth:</strong> Teeth count on the bolt gear.</li>
+            </ul>
+
+            <h3>Example (M6 Bolt)</h3>
+            <ul>
+                <li><strong>Pitch:</strong> P = 1.0 mm</li>
+                <li><strong>Thickness:</strong> 6 mm</li>
+                <li><strong>Sample L:</strong> 228.5 mm (centerline radius = 225.5 mm)</li>
+                <li><strong>Gears:</strong> Small = 10, Large = 50</li>
+                <li><strong>Result:</strong> Large gear rotation time about 60.82 s</li>
+            </ul>
+
+            <h3>Output</h3>
+            <p><strong>Large Gear Rotation Time</strong> is the target seconds per one rotation of the large gear. The gear ratio only changes the motor timing.</p>
 
             <div class="input-group">
                 <label>Hinge-to-Bolt Distance (L) mm</label>
@@ -329,6 +369,40 @@
             <h2>The Science</h2>
             <p>If you use a straight bolt, the geometry changes as the mount opens, causing tracking to slow down. <strong>Bending the rod into an arc</strong> with radius $L$ eliminates this error entirely.</p>
             <p><em>Tip: Bend the rod around a jig slightly smaller than L to account for the rod's own thickness.</em></p>
+
+            <h3>Theory</h3>
+            <ol>
+                <li>
+                    <strong>Polar Alignment (The Foundation)</strong>
+                    <ul>
+                        <li><strong>The Hinge Axis:</strong> The hinge must align parallel to Earth's axis (pointing at the North or South Celestial Pole).</li>
+                        <li><strong>Rotational Compensation:</strong> As Earth rotates East to West at about <strong>15.04° per hour</strong>, the tracker opens the boards at the same rate in the opposite direction.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Eliminating Tangent Error</strong>
+                    <ul>
+                        <li><strong>The Problem:</strong> Straight-bolt designs slow down as the angle increases, causing star trails after about 5–10 minutes.</li>
+                        <li><strong>The Curved Bolt Solution:</strong> Bending the rod into a circle centered on the hinge keeps the radius <strong>R</strong> constant.</li>
+                        <li><strong>Linearity:</strong> A fixed radius makes the nut's linear travel translate into a perfectly linear angular movement.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Single Motor Synchronization</strong>
+                    <ul>
+                        <li><strong>Mechanism:</strong> A single motor turns a nut or the bolt itself at a constant RPM.</li>
+                        <li><strong>The Math:</strong> The distance from the hinge to the bolt (<strong>R</strong>) is determined by the motor speed and thread pitch.</li>
+                        <li><strong>Calculation:</strong> R = (P × 1436.07) / (2π × T).</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Declination and Mounting</strong>
+                    <ul>
+                        <li><strong>RA Axis:</strong> The motor-driven opening handles right ascension tracking.</li>
+                        <li><strong>Declination Axis:</strong> A ball head on the top board allows the camera to pivot to different altitudes while the platform tracks.</li>
+                    </ul>
+                </li>
+            </ol>
         </div>
     </section>
 </div>
