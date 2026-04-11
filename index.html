@@ -5,169 +5,237 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Star Tracker Pro | Calibration & Math</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --primary: #1a252f;
-            --accent: #3498db;
-            --accent-glow: rgba(52, 152, 219, 0.3);
-            --bg: #0a0e27;
-            --card-bg: rgba(255, 255, 255, 0.98);
-            --text: #2c3e50;
+            --bg: #f4f6fb;
+            --surface: #ffffff;
+            --surface-strong: #eef1f8;
+            --text: #0f172a;
+            --muted: #5b6478;
+            --accent: #2f6bff;
+            --accent-ink: #ffffff;
+            --ring: rgba(47, 107, 255, 0.25);
+            --outline: rgba(15, 23, 42, 0.08);
+            --shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0e1220;
+                --surface: rgba(20, 26, 43, 0.96);
+                --surface-strong: rgba(28, 36, 58, 0.95);
+                --text: #f4f6fb;
+                --muted: #b5bdd6;
+                --accent: #7ea4ff;
+                --accent-ink: #0d1020;
+                --ring: rgba(126, 164, 255, 0.35);
+                --outline: rgba(148, 163, 184, 0.18);
+                --shadow: 0 22px 50px rgba(0, 0, 0, 0.35);
+            }
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Space Grotesk', 'Trebuchet MS', sans-serif;
             background-color: var(--bg);
             color: var(--text);
             line-height: 1.6;
-            background-image: url('images/image.jpg');
-            background-size: cover;
-            background-position: center;
+            min-height: 100vh;
+            background-image:
+                radial-gradient(circle at top left, rgba(47, 107, 255, 0.18), transparent 55%),
+                radial-gradient(circle at 80% 20%, rgba(255, 189, 89, 0.15), transparent 60%),
+                repeating-linear-gradient(90deg, rgba(15, 23, 42, 0.04), rgba(15, 23, 42, 0.04) 1px, transparent 1px, transparent 24px);
             background-attachment: fixed;
-            background-repeat: no-repeat;
         }
 
         header {
-            background: linear-gradient(135deg, rgba(44, 62, 80, 0.85) 0%, rgba(0, 0, 0, 0.85) 100%);
-            color: white;
-            padding: 50px 20px;
+            padding: 54px 20px 30px;
             text-align: center;
-            border-bottom: 3px solid var(--accent);
+        }
+
+        header h1 {
+            font-size: clamp(2rem, 3.6vw, 2.8rem);
+            letter-spacing: -0.02em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: var(--muted);
+            max-width: 540px;
+            margin: 0 auto;
         }
 
         .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px 20px 70px;
             display: flex;
             flex-direction: column;
-            gap: 20px; /* Consistent spacing between sections */
-            max-width: 800px; /* Reduce overall width for a concise layout */
-            margin: 0 auto; /* Center the content */
-            padding: 20px; /* Reduce padding for a cleaner look */
+            gap: 26px;
         }
 
-        @media (max-width: 1000px) { .container { grid-template-columns: 1fr; } }
-
-        @media (max-width: 768px) {
-            .container {
-                gap: 15px; /* Reduce spacing further for mobile */
-                padding: 15px; /* Smaller padding on mobile */
-            }
-
-            .card, .science-box {
-                padding: 15px; /* Smaller padding inside boxes on mobile */
-            }
-
-            h2 {
-                font-size: 1.2em; /* Smaller headings on mobile */
-            }
-
-            p, ul li {
-                font-size: 0.85em; /* Smaller text on mobile */
-            }
+        .pill-tabs {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: var(--surface-strong);
+            border-radius: 999px;
+            padding: 6px;
+            border: 1px solid var(--outline);
+            box-shadow: var(--shadow);
+            overflow: hidden;
         }
 
-        .card, .science-box {
-            padding: 20px; /* Reduce padding inside boxes */
-            border-radius: 10px; /* Slightly smaller border radius */
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3); /* Subtle shadow */
+        .tab-highlight {
+            position: absolute;
+            top: 6px;
+            bottom: 6px;
+            left: 6px;
+            width: 0;
+            border-radius: 999px;
+            background: var(--accent);
+            transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 10px 22px rgba(47, 107, 255, 0.35);
+            z-index: 1;
         }
 
-        .card {
-            background: rgba(30, 40, 60, 0.80);
-            padding: 35px;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            color: #ffffff;
-            backdrop-filter: blur(10px);
+        .tab-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 14px 10px;
+            cursor: pointer;
+            position: relative;
+            z-index: 2;
+            transition: color 0.25s ease;
         }
 
-        .science-box {
-            grid-column: span 2; /* Spans both columns */
-            background: rgba(30, 40, 60, 0.80);
-            padding: 35px;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            color: #ffffff;
-            backdrop-filter: blur(10px);
-            margin-top: 20px; /* Reduced margin above the wide box */
+        .tab-btn.active { color: var(--accent-ink); }
+
+        .tab-panel {
+            display: none;
+            animation: panelIn 0.35s ease;
         }
 
-        h2 { color: #ffffff; margin-bottom: 20px; font-size: 1.4em; border-left: 5px solid var(--accent); padding-left: 15px; }
-        h3 { color: #64b5f6; margin-top: 25px; margin-bottom: 10px; font-size: 1.2em; }
-        
-        p, ul li { margin-bottom: 10px; font-size: 0.9em; color: #e0e0e0; }
+        .tab-panel.active { display: block; }
 
-        header h1 { color: #ffffff; }
-        header p { color: #b3e5fc; }
+        .panel {
+            background: var(--surface);
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--outline);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+        }
+
+        h3 {
+            margin-top: 24px;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        p, ul li { color: var(--muted); margin-bottom: 10px; }
+        strong { color: var(--text); }
 
         .formula-box {
-            font-family: 'Consolas', 'Monaco', monospace;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px dashed var(--accent);
-            margin: 15px 0;
-            color: #64b5f6;
-            font-weight: bold;
+            font-family: 'IBM Plex Mono', 'Consolas', monospace;
+            background: var(--surface-strong);
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px dashed var(--outline);
+            margin: 16px 0;
+            color: var(--text);
         }
 
-        /* Table Styling */
-        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9em; }
-        th, td { text-align: left; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); color: #e0e0e0; }
-        th { background: rgba(0, 0, 0, 0.2); color: #64b5f6; }
-
-        /* Input Styling */
-        .input-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 0.9em; color: #b3e5fc; }
+        .input-group { margin-bottom: 18px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text); }
         input {
             width: 100%;
-            padding: 12px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 8px;
-            font-size: 16px;
-            transition: 0.3s;
-            background: rgba(255,255,255,0.1);
-            color: #ffffff;
+            padding: 12px 14px;
+            border: 1px solid var(--outline);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: 0.25s ease;
+            background: transparent;
+            color: var(--text);
         }
-        input::placeholder { color: rgba(255,255,255,0.5); }
-        input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 10px var(--accent-glow); background: rgba(255,255,255,0.15); }
+        input::placeholder { color: rgba(91, 100, 120, 0.7); }
+        input:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 4px var(--ring);
+        }
 
         .results-panel {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 25px;
-            border-radius: 12px;
-            margin-top: 20px;
-            border-left: 8px solid var(--accent);
-            display: block; /* Ensure the results panel is always visible */
+            background: var(--surface-strong);
+            padding: 22px;
+            border-radius: 14px;
+            margin-top: 18px;
+            border: 1px solid var(--outline);
+            display: none;
         }
 
-        .res-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .res-label { font-weight: 600; color: #b3e5fc; }
-        .res-value { font-family: 'Courier New', monospace; font-weight: 700; color: #64b5f6; font-size: 1.1em; }
-        .res-value span {
-            visibility: visible; /* Ensure output values are always visible */
+        .calc-btn {
+            width: 100%;
+            border: none;
+            border-radius: 999px;
+            padding: 14px 18px;
+            font-size: 1rem;
+            font-weight: 600;
+            background: var(--accent);
+            color: var(--accent-ink);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 12px 26px rgba(47, 107, 255, 0.25);
         }
 
-        .hint { font-size: 0.8em; color: #90caf9; margin-top: 5px; font-style: italic; }
+        .calc-btn:hover { transform: translateY(-1px); }
+        .calc-btn:focus { outline: none; box-shadow: 0 0 0 4px var(--ring); }
+
+        .res-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--outline);
+        }
+
+        .res-row:last-child { border-bottom: none; }
+
+        .res-label { font-weight: 600; color: var(--text); }
+        .res-value {
+            font-family: 'IBM Plex Mono', 'Consolas', monospace;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .hint { font-size: 0.85rem; color: var(--muted); margin-top: 6px; }
 
         ul { margin-left: 20px; }
-        ul li { color: #e0e0e0; margin-bottom: 8px; }
-        strong { color: #ffffff; }
+
+        @keyframes panelIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 40px 18px 20px; }
+            .container { padding: 18px 16px 60px; }
+            .panel { padding: 22px; }
+            .tab-btn { padding: 12px 8px; font-size: 0.9rem; }
+        }
 
         @media (max-width: 480px) {
-            body { background-attachment: scroll; }
-            header { padding: 30px 15px; }
-            header h1 { font-size: 1.5em; }
-            header p { font-size: 0.9em; }
-            .container { padding: 20px 15px; gap: 20px; }
-            .card { padding: 20px; border-radius: 10px; }
-            h2 { font-size: 1.3em; }
-            h3 { font-size: 1em; }
-            p { font-size: 0.9em; }
-            input { padding: 14px; font-size: 16px; }
-            label { font-size: 0.85em; }
-            table { font-size: 0.8em; }
-            th, td { padding: 8px; }
+            .pill-tabs { padding: 4px; }
+            .tab-highlight { top: 4px; bottom: 4px; left: 4px; }
         }
     </style>
 </head>
@@ -175,113 +243,164 @@
 
 <header>
     <h1>Barn Door Tracker</h1>
+    <p>Minimal, accurate timing for a curved-bolt tracker with a single motor.</p>
 </header>
 
 <div class="container">
-    <div class="card">
-        <h2>The Math</h2>
-        <p>A <strong>Barn Door/Haig Mount</strong> counteracts Earth's rotation by opening two boards at a precise "Sidereal" rate. To track the stars, the mount must complete one full rotation every <strong>23h 56m 4.09s</strong>.</p>
+    <nav class="pill-tabs" aria-label="Tracker sections">
+        <span class="tab-highlight" aria-hidden="true"></span>
+        <button class="tab-btn active" type="button" data-tab="math" aria-controls="tab-math" aria-selected="true">Math</button>
+        <button class="tab-btn" type="button" data-tab="calculator" aria-controls="tab-calculator" aria-selected="false">Calculator</button>
+        <button class="tab-btn" type="button" data-tab="science" aria-controls="tab-science" aria-selected="false">Science</button>
+    </nav>
 
-        <h3>The Sidereal Constant</h3>
-        <p>The core of our calculation relies on the Sidereal Constant. This represents how many seconds it takes for Earth to rotate by one radian:</p>
-        <div class="formula-box">Constant = 86,164.09 sec / 2π ≈ 13713.44</div>
+    <section class="tab-panel active" id="tab-math" data-tab-panel="math">
+        <div class="panel">
+            <h2>The Math</h2>
+            <p>A <strong>Barn Door/Haig Mount</strong> counteracts Earth's rotation by opening two boards at a precise "Sidereal" rate. To track the stars, the mount must complete one full rotation every <strong>23h 56m 4.09s</strong>.</p>
 
-        <h3>The Master Formula</h3>
-        <p>To avoid "star trailing," your drive bolt must rotate at this speed:</p>
-        <div class="formula-box">T_rev = (13713.44 × P) / L</div>
-        <ul>
-            <li><strong>T_rev:</strong> Seconds per full 360° turn of the bolt.</li>
-            <li><strong>P:</strong> Thread Pitch (distance moved per turn).</li>
-            <li><strong>L:</strong> Radius from the hinge center to the bolt center.</li>
-        </ul>
-    </div>
+            <h3>The Sidereal Rate</h3>
+            <p>The core of our calculation relies on the sidereal angular rate:</p>
+            <div class="formula-box">ω = 2π / 1436.07 ≈ 0.004375 rad/min</div>
 
-    <div class="card">
-        <h2>Calibration Tool</h2>
-        <p>Enter your build measurements to calculate timing.</p>
-
-        <div class="input-group">
-            <label>Hinge-to-Bolt Distance (L) mm</label>
-            <input type="number" id="L" placeholder="e.g. 228.5" step="0.1" oninput="runCalc()">
-            <div class="hint">Distance from hinge pin center to bolt center.</div>
+            <h3>The Master Formula</h3>
+            <p>To avoid "star trailing," your drive bolt must rotate at this speed:</p>
+            <div class="formula-box">T_rev = P / (R × ω)</div>
+            <ul>
+                <li><strong>T_rev:</strong> Minutes per full 360° turn of the bolt.</li>
+                <li><strong>P:</strong> Thread Pitch (distance moved per turn).</li>
+                <li><strong>R:</strong> Radius from the hinge center to the bolt center.</li>
+            </ul>
         </div>
+    </section>
 
-        <div class="input-group">
-            <label>Bolt Thread Pitch (P) mm</label>
-            <input type="number" id="P" placeholder="e.g. 1.0" step="0.01" oninput="runCalc()">
-            <div class="hint">Standard M6 is 1.0, M8 is 1.25.</div>
-        </div>
+    <section class="tab-panel" id="tab-calculator" data-tab-panel="calculator">
+        <div class="panel">
+            <h2>Calculator</h2>
+            <p>Enter your build measurements to calculate the target timing.</p>
 
-        <div class="input-group">
-            <label>Big Gear Teeth (on bolt)</label>
-            <input type="number" id="tBig" placeholder="e.g. 50" oninput="runCalc()">
-            <div class="hint">Leave blank or 1 if direct drive.</div>
-        </div>
-
-        <div class="input-group">
-            <label>Small Gear Teeth (on motor)</label>
-            <input type="number" id="tSmall" placeholder="e.g. 10" oninput="runCalc()">
-        </div>
-
-        <div class="results-panel" id="results">
-            <div class="res-row">
-                <span class="res-label">Bolt Rotation:</span>
-                <span class="res-value"><span id="outBolt">0</span>s</span>
+            <div class="input-group">
+                <label>Hinge-to-Bolt Distance (L) mm</label>
+                <input type="number" id="L" placeholder="e.g. 228.5" step="0.1">
+                <div class="hint">Measure from hinge center to the outer edge of the bolt.</div>
             </div>
-            <div class="res-row">
-                <span class="res-label">Motor Rotation:</span>
-                <span class="res-value"><span id="outMotor">0</span>s</span>
-            </div>
-            <div class="res-row">
-                <span class="res-label">Target RPM:</span>
-                <span class="res-value" id="outRPM">0</span>
-            </div>
-            <div class="res-row" style="margin-top:10px; border-top: 2px solid #ddd; padding-top:15px;">
-                <span class="res-label">Rod Bend Radius:</span>
-                <span class="res-value"><span id="outBend">0</span>mm</span>
-            </div>
-            <p class="hint" style="text-align:center; margin-top:10px;">Calculated for a precise Sidereal Day.</p>
-        </div>
-    </div>
 
-    <div class="science-box">
-        <h2>The Science</h2>
-        <p>If you use a straight bolt, the geometry changes as the mount opens, causing tracking to slow down. <strong>Bending the rod into an arc</strong> with radius $L$ eliminates this error entirely.</p>
-        <p><em>Tip: Bend the rod around a jig slightly smaller than L to account for the rod's own thickness.</em></p>
-    </div>
+            <div class="input-group">
+                <label>Bolt Thread Pitch (P) mm</label>
+                <input type="number" id="P" placeholder="e.g. 1.0" step="0.01">
+                <div class="hint">Standard M6 is 1.0, M8 is 1.25.</div>
+            </div>
+
+            <div class="input-group">
+                <label>Bolt Thickness (Diameter) mm</label>
+                <input type="number" id="thickness" placeholder="e.g. 6" step="0.1">
+                <div class="hint">Used to convert L to the bolt centerline (L - thickness/2).</div>
+            </div>
+
+            <div class="input-group">
+                <label>Small Gear Teeth (motor)</label>
+                <input type="number" id="tSmall" placeholder="e.g. 10">
+            </div>
+
+            <div class="input-group">
+                <label>Large Gear Teeth (on bolt)</label>
+                <input type="number" id="tLarge" placeholder="e.g. 50">
+                <div class="hint">Use 1 and 1 for direct drive.</div>
+            </div>
+
+            <button class="calc-btn" type="button" onclick="runCalc()">Calculate</button>
+
+            <div class="results-panel" id="results">
+                <div class="res-row">
+                    <span class="res-label">Large Gear Rotation (target):</span>
+                    <span class="res-value"><span id="outLarge">0</span> s</span>
+                </div>
+                <div class="res-row">
+                    <span class="res-label">Small Gear Rotation (motor):</span>
+                    <span class="res-value"><span id="outSmall">0</span> s</span>
+                </div>
+                <p class="hint" style="text-align:center; margin-top:10px;">Large-gear timing is the sidereal target. The gear ratio only changes motor timing.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="tab-panel" id="tab-science" data-tab-panel="science">
+        <div class="panel">
+            <h2>The Science</h2>
+            <p>If you use a straight bolt, the geometry changes as the mount opens, causing tracking to slow down. <strong>Bending the rod into an arc</strong> with radius $L$ eliminates this error entirely.</p>
+            <p><em>Tip: Bend the rod around a jig slightly smaller than L to account for the rod's own thickness.</em></p>
+        </div>
+    </section>
 </div>
 
 <script>
+    const tabs = Array.from(document.querySelectorAll('.tab-btn'));
+    const panels = Array.from(document.querySelectorAll('.tab-panel'));
+    const highlight = document.querySelector('.tab-highlight');
+
+    function moveHighlight(tab) {
+        const nav = tab.closest('.pill-tabs');
+        const navRect = nav.getBoundingClientRect();
+        const tabRect = tab.getBoundingClientRect();
+        highlight.style.width = `${tabRect.width}px`;
+        highlight.style.transform = `translateX(${tabRect.left - navRect.left}px)`;
+    }
+
+    function setActiveTab(targetTab) {
+        tabs.forEach((tab) => {
+            const isActive = tab === targetTab;
+            tab.classList.toggle('active', isActive);
+            tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+
+        panels.forEach((panel) => {
+            const isActive = panel.dataset.tabPanel === targetTab.dataset.tab;
+            panel.classList.toggle('active', isActive);
+        });
+
+        moveHighlight(targetTab);
+    }
+
+    tabs.forEach((tab) => {
+        tab.addEventListener('click', () => setActiveTab(tab));
+    });
+
+    window.addEventListener('resize', () => {
+        const activeTab = document.querySelector('.tab-btn.active');
+        if (activeTab) {
+            moveHighlight(activeTab);
+        }
+    });
+
+    if (tabs.length) {
+        setActiveTab(tabs[0]);
+    }
+
     function runCalc() {
         const L = parseFloat(document.getElementById('L').value);
         const P = parseFloat(document.getElementById('P').value);
-        const tBig = parseFloat(document.getElementById('tBig').value) || 1;
+        const thickness = parseFloat(document.getElementById('thickness').value) || 0;
         const tSmall = parseFloat(document.getElementById('tSmall').value) || 1;
+        const tLarge = parseFloat(document.getElementById('tLarge').value) || 1;
         const panel = document.getElementById('results');
 
-        // Precise Sidereal Constant (86164.09 / 2PI)
-        const SIDEREAL_CONST = 13713.4412;
+        // Sidereal rate in radians per minute
+        const OMEGA = (2 * Math.PI) / 1436.07;
 
-        if (L > 0 && P > 0) {
+        const centerlineRadius = L - (thickness / 2);
+
+        if (centerlineRadius > 0 && P > 0 && tSmall > 0 && tLarge > 0) {
             panel.style.display = 'block';
 
-            // 1. Bolt Rotation Time
-            const tBolt = (SIDEREAL_CONST * P) / L;
+            // 1. Large Gear (bolt) Rotation Time
+            const tLargeRotMin = P / (centerlineRadius * OMEGA);
 
-            // 2. Motor Timing
-            const ratio = tBig / tSmall;
-            const tMotor = tBolt / ratio;
-            const rpm = 60 / tMotor;
-
-            // 3. Physical Bend (Assuming common rod thicknesses)
-            const rodThickness = (P >= 1.25) ? 8 : 6;
-            const bendR = L - (rodThickness / 2);
+            // 2. Small Gear (motor) Rotation Time
+            const tSmallRotMin = tLargeRotMin * (tSmall / tLarge);
 
             // Update UI
-            document.getElementById('outBolt').innerText = tBolt.toFixed(2);
-            document.getElementById('outMotor').innerText = tMotor.toFixed(2);
-            document.getElementById('outRPM').innerText = rpm.toFixed(4);
-            document.getElementById('outBend').innerText = bendR.toFixed(1);
+            document.getElementById('outLarge').innerText = (tLargeRotMin * 60).toFixed(2);
+            document.getElementById('outSmall').innerText = (tSmallRotMin * 60).toFixed(2);
         } else {
             panel.style.display = 'none';
         }
