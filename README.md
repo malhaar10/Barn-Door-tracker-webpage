@@ -40,7 +40,24 @@ The curved-bolt barn door tracker is a mechanical analog device designed to neut
 ---
 
 ### Calculator
-*(Section intentionally left blank)*
+The calculator on the webpage uses the sidereal formula to output the target time for one full rotation of the large gear (the bolt).
+
+Inputs:
+* **Hinge-to-Bolt Distance (L):** Measure from the hinge center to the outer edge of the bolt.
+* **Bolt Pitch (P):** Thread pitch in mm per revolution.
+* **Bolt Thickness:** Diameter of the bolt (used to convert L to centerline distance).
+* **Small Gear Teeth:** Teeth count for the motor gear.
+* **Large Gear Teeth:** Teeth count for the bolt gear.
+
+Example (M6 bolt):
+* **Pitch:** $P = 1.0$ mm
+* **Thickness:** $6$ mm
+* **Sample L:** $228.5$ mm (centerline radius $= 225.5$ mm)
+* **Gears:** Small $= 10$, Large $= 50$
+* **Result:** Large gear rotation time about $60.82$ s
+
+Output:
+* **Large Gear Rotation Time:** Target seconds per one rotation of the large gear. (The gear ratio is used to derive the motor timing.)
 
 ---
 
